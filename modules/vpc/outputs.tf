@@ -1,0 +1,12 @@
+output "vpc_id" {
+    description = "displays the vpcs id"
+    value = module.vpc.default_vpc_id
+}
+
+output "public_subnet_ids" {
+  value = module.vpc.public_subnets
+}
+
+output "private_subnet_ids" {
+  value = module.vpc.private_subnets
+}
