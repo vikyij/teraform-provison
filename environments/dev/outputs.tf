@@ -14,11 +14,36 @@ output "private_subnet_ids" {
 }
 
 output "task-execution_role-arn" {
-    description = "This is the task execution role arn"
-  value = module.iam.task-execution_role-arn
+  description = "This is the task execution role arn"
+  value       = module.iam.task-execution_role-arn
 }
 
 output "task-role-arn" {
-    description = "This is the task role arn"
-  value = module.iam.task-role-arn
+  description = "This is the task role arn"
+  value       = module.iam.task-role-arn
+}
+
+output "alb_dns_name" {
+  value = module.alb.alb_dns_name
+}
+
+output "security_group_id" {
+  value = module.alb.security_group_id
+}
+
+output "frontend_target_group_arn" {
+  value = aws_lb_target_group.frontend.arn
+}
+
+output "fastapi_target_group_arn" {
+  value = aws_lb_target_group.fastapi.arn
+}
+
+
+output "listener_arns" {
+  value = module.alb.listener_arns
+}
+
+output "target_group_arns" {
+  value = module.alb.target_group_arns
 }
