@@ -13,3 +13,10 @@ module "vpc" {
   enable_vpn_gateway  = var.enable_vpn_gateway
   env                 = var.env
 }
+
+module "iam" {
+  source = "../../modules/iam"
+
+  env              = var.env
+  task_policy_json = file("${path.module}/custom_task_policy.json")
+}
