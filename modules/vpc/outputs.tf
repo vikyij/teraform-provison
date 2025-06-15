@@ -1,6 +1,6 @@
 output "vpc_id" {
     description = "displays the vpcs id"
-    value = module.vpc.default_vpc_id
+    value = module.vpc.vpc_id
 }
 
 output "public_subnet_ids" {
