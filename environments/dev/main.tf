@@ -41,28 +41,28 @@ module "alb" {
   depends_on = [module.vpc]
 }
 
- resource "aws_lb_target_group" "frontend" {
-   name        = "frontend"
-   port        = 80
-   protocol    = "HTTP"
-   target_type = "ip"
-   vpc_id      = module.vpc.vpc_id
+resource "aws_lb_target_group" "frontend" {
+  name        = "frontend"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = module.vpc.vpc_id
 
   health_check {
-     path = "/"
-   }
- }
+    path = "/"
+  }
+}
 
- resource "aws_lb_target_group" "fastapi" {
-   name        = "fastapi"
-   port        = 8000
-   protocol    = "HTTP"
-   target_type = "ip"
-   vpc_id      = module.vpc.vpc_id
+resource "aws_lb_target_group" "fastapi" {
+  name        = "fastapi"
+  port        = 8000
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = module.vpc.vpc_id
 
-   health_check {
-     path = "/health"
-   }
+  health_check {
+    path = "/health"
+  }
 }
 
 // define alb listener rules for frontend - this routes traffic requests from / to the frontend ecs
@@ -97,6 +97,126 @@ resource "aws_lb_listener_rule" "fastapi_api" {
   condition {
     path_pattern {
       values = ["/api/*"]
+    }
+  }
+}
+
+module "ecs" {
+  source = "../../modules/ecs"
+
+  cluster_name = var.cluster_name
+  env          = var.env
+
+  services = {
+    # React frontend (public subnet)
+    react = {
+      cpu    = 256
+      memory = 512
+      container_definitions = {
+        react = {
+          image         = "your-react-ecr-image-url"
+          port_mappings = [{ containerPort = 80, hostPort = 80, protocol = "tcp" }]
+        }
+      }
+      load_balancer = {
+        service = {
+          target_group_arn = aws_lb_target_group.frontend.arn
+          container_name   = "react"
+          container_port   = 80
+        }
+      }
+      subnet_ids = module.vpc.public_subnet_ids
+      security_group_rules = {
+        alb_ingress_80 = {
+          type                     = "ingress"
+          from_port                = 80
+          to_port                  = 80
+          protocol                 = "tcp"
+          source_security_group_id = module.alb.security_group_id
+        }
+        egress_all = {
+          type        = "egress"
+          from_port   = 0
+          to_port     = 0
+          protocol    = "-1"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      }
+    }
+
+    # FastAPI backend (public subnet or internal depending on use)
+    fastapi = {
+      cpu    = 256
+      memory = 512
+      container_definitions = {
+        fastapi = {
+          image         = "your-fastapi-ecr-image-url"
+          port_mappings = [{ containerPort = 8000, hostPort = 8000, protocol = "tcp" }]
+        }
+      }
+      load_balancer = {
+        service = {
+          target_group_arn = aws_lb_target_group.fastapi.arn
+          container_name   = "fastapi"
+          container_port   = 8000
+        }
+      }
+      subnet_ids = module.vpc.public_subnet_ids
+      security_group_rules = {
+        alb_ingress_8000 = {
+          type                     = "ingress"
+          from_port                = 8000
+          to_port                  = 8000
+          protocol                 = "tcp"
+          source_security_group_id = module.alb.security_group_id
+        }
+
+        egress_all = {
+          type        = "egress"
+          from_port   = 0
+          to_port     = 0
+          protocol    = "-1"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      }
+    }
+
+    # Celery Worker (private subnet)
+    celery_worker = {
+      cpu    = 256
+      memory = 512
+      container_definitions = {
+        celery = {
+          image = "your-celery-worker-ecr-image-url"
+        }
+      }
+      subnet_ids = module.vpc.private_subnet_ids
+    }
+
+    # Celery Beat (private subnet)
+    celery_beat = {
+      cpu    = 256
+      memory = 512
+      container_definitions = {
+        beat = {
+          image       = "your-celery-beat-ecr-image-url"
+          environment = [{ name = "ENV", value = var.env }]
+        }
+      }
+      subnet_ids = module.vpc.private_subnet_ids
+    }
+
+    # Data Poller (private subnet)
+    data_poller = {
+      cpu    = 256
+      memory = 512
+      container_definitions = {
+        poller = {
+          image = "your-data-poller-ecr-image-url"
+        }
+      }
+      subnet_ids           = module.vpc.private_subnet_ids
+      security_group_rules = {}
     }
   }
 }

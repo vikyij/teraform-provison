@@ -37,3 +37,8 @@ variable "region" {
   description = "This is the aws region where resources will be created"
   type        = string
 }
+
+variable "cluster_name" {
+  description = "defines the cluster name"
+  type        = string
+}

@@ -47,3 +47,7 @@ output "listener_arns" {
 output "target_group_arns" {
   value = module.alb.target_group_arns
 }
+
+output "ecs_cluster_name" {
+  value = module.ecs.ecs_cluster_name
+}
