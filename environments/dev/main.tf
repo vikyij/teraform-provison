@@ -2,6 +2,15 @@ provider "aws" {
   region = var.region
 }
 
+locals {
+  common_tags = {
+    Environment = var.env
+    Project     = "my-project"
+    Terraform   = "true"
+  }
+}
+
+
 module "vpc" {
   source = "../../modules/vpc"
 
@@ -11,7 +20,7 @@ module "vpc" {
   vpc_private_subnets = var.vpc_private_subnets
   enable_nat_gateway  = var.enable_nat_gateway
   enable_vpn_gateway  = var.enable_vpn_gateway
-  env                 = var.env
+  tags                = local.common_tags
 }
 
 module "iam" {
@@ -36,7 +45,8 @@ module "alb" {
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.public_subnet_ids
   certificate_arn = data.aws_acm_certificate.existing_cert.arn
-  env             = var.env
+  tags            = local.common_tags
+
 
   depends_on = [module.vpc]
 }
@@ -103,14 +113,14 @@ resource "aws_lb_listener_rule" "fastapi_api" {
 
 module "ecr" {
   source = "../../modules/ecr"
-  env    = var.env
+  tags   = local.common_tags
 }
 
 module "ecs" {
   source = "../../modules/ecs"
 
   cluster_name = var.cluster_name
-  env          = var.env
+  tags         = local.common_tags
 
   services = {
     # React frontend (public subnet)

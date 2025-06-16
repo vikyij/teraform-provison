@@ -23,10 +23,7 @@ module "ecr_react_frontend" {
     ]
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.env
-  }
+   tags = var.tags
 }
 
 module "ecr_fastapi" {
@@ -54,10 +51,7 @@ module "ecr_fastapi" {
     ]
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.env
-  }
+   tags = var.tags
 }
 
 module "ecr_celery_worker" {
@@ -85,10 +79,7 @@ module "ecr_celery_worker" {
     ]
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.env
-  }
+    tags = var.tags
 }
 
 module "ecr_celery_beat" {
@@ -116,10 +107,7 @@ module "ecr_celery_beat" {
     ]
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.env
-  }
+   tags = var.tags
 }
 
 module "ecr_data_poller" {
@@ -147,8 +135,5 @@ module "ecr_data_poller" {
     ]
   })
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.env
-  }
+  tags = var.tags
 }

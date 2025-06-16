@@ -4,9 +4,9 @@ variable "cluster_name" {
     type = string
 }
 
-variable "env" {
-    description = "defines the different environments"
-    type = string
+variable "tags" {
+    type        = map(string)
+  description = "Common tags for all resources"
 }
 
 variable "services" {

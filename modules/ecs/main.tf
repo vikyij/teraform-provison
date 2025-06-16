@@ -34,8 +34,5 @@ module "ecs" {
   services = var.services
 
   # Tags for organization and cost tracking
-  tags = {
-    Environment = var.env
-    Project     = "my-project"
-  }
+  tags = var.tags
 }
