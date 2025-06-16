@@ -51,3 +51,23 @@ output "target_group_arns" {
 output "ecs_cluster_name" {
   value = module.ecs.ecs_cluster_name
 }
+
+output "ecr_react_frontend_url" {
+  value = module.ecr.ecr_react_frontend_url
+}
+
+output "ecr_fastapi_api_url" {
+  value = module.ecr.ecr_fastapi_url
+}
+
+output "ecr_celery_worker_url" {
+  value = module.ecr.ecr_celery_worker_url
+}
+
+output "ecr_celery_beat_url" {
+  value = module.ecr.ecr_celery_beat_url
+}
+
+output "ecr_data_poller_url" {
+  value = module.ecr.ecr_data_poller_url
+}

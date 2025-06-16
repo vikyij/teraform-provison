@@ -101,6 +101,11 @@ resource "aws_lb_listener_rule" "fastapi_api" {
   }
 }
 
+module "ecr" {
+  source = "../../modules/ecr"
+  env    = var.env
+}
+
 module "ecs" {
   source = "../../modules/ecs"
 
@@ -114,7 +119,7 @@ module "ecs" {
       memory = 512
       container_definitions = {
         react = {
-          image         = "your-react-ecr-image-url"
+          image         = module.ecr.ecr_react_frontend_url
           port_mappings = [{ containerPort = 80, hostPort = 80, protocol = "tcp" }]
         }
       }
@@ -150,7 +155,7 @@ module "ecs" {
       memory = 512
       container_definitions = {
         fastapi = {
-          image         = "your-fastapi-ecr-image-url"
+          image         = module.ecr.ecr_fastapi_url
           port_mappings = [{ containerPort = 8000, hostPort = 8000, protocol = "tcp" }]
         }
       }
@@ -187,7 +192,7 @@ module "ecs" {
       memory = 512
       container_definitions = {
         celery = {
-          image = "your-celery-worker-ecr-image-url"
+          image = module.ecr.ecr_celery_worker_url
         }
       }
       subnet_ids = module.vpc.private_subnet_ids
@@ -199,7 +204,7 @@ module "ecs" {
       memory = 512
       container_definitions = {
         beat = {
-          image       = "your-celery-beat-ecr-image-url"
+          image       = module.ecr.ecr_celery_beat_url
           environment = [{ name = "ENV", value = var.env }]
         }
       }
@@ -212,7 +217,7 @@ module "ecs" {
       memory = 512
       container_definitions = {
         poller = {
-          image = "your-data-poller-ecr-image-url"
+          image = module.ecr.ecr_data_poller_url
         }
       }
       subnet_ids           = module.vpc.private_subnet_ids
