@@ -1,4 +1,4 @@
-variable "env" {
-  description = "defines the different environments"
-  type = string
+variable "tags" {
+    type        = map(string)
+  description = "Common tags for all resources"
 }

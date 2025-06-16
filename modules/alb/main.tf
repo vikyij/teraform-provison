@@ -57,8 +57,9 @@ module "alb" {
     }
   }
   
-    tags = {
-    Environment = var.env
-    Project= "my-project"
-  }
+  #   tags = {
+  #   Environment = var.env
+  #   Project= "my-project"
+  # }
+  tags = var.tags
 }
