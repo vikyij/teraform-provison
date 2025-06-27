@@ -71,3 +71,12 @@ output "ecr_celery_beat_url" {
 output "ecr_data_poller_url" {
   value = module.ecr.ecr_data_poller_url
 }
+
+output "arn" {
+  value = module.alb.arn
+}
+
+output "web_acl_arn" {
+  value       = module.waf.web_acl_arn
+  description = "WAF Web ACL ARN"
+}

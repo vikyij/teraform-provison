@@ -22,3 +22,7 @@ output "target_group_arns" {
   value = module.alb.target_groups
 }
 
+output "arn" {
+  value = module.alb.arn
+}
+
