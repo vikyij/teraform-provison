@@ -111,6 +111,15 @@ resource "aws_lb_listener_rule" "fastapi_api" {
   }
 }
 
+// waf
+module "waf" {
+  source = "../../modules/waf"
+
+  env     = var.env
+  tags    = local.common_tags
+  alb_arn = module.alb.arn
+}
+
 module "ecr" {
   source = "../../modules/ecr"
   tags   = local.common_tags
