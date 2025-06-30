@@ -80,3 +80,11 @@ output "web_acl_arn" {
   value       = module.waf.web_acl_arn
   description = "WAF Web ACL ARN"
 }
+
+output "log_group_arn" {
+  value = module.cloudwatch.log_group_arn
+}
+
+output "metric_arn" {
+  value = module.cloudwatch.metric_arn
+}
