@@ -244,3 +244,10 @@ module "ecs" {
     }
   }
 }
+
+module "cloudwatch" {
+  source = "../../modules/cloudwatch"
+
+  env  = var.env
+  tags = local.common_tags
+}
