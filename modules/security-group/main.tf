@@ -1,6 +1,7 @@
 //fastapi security group
 resource "aws_security_group" "ecs_fastapi" {
   name   = "ecs-fastapi-${var.env}"
+  description = "Allow ALB to connect to ECS Fastapi"
   vpc_id = var.vpc_id
 
   ingress {
