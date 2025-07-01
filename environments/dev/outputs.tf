@@ -88,3 +88,12 @@ output "log_group_arn" {
 output "metric_arn" {
   value = module.cloudwatch.metric_arn
 }
+
+output "fastapi_sg_id" {
+  description = "Security group ID for FastAPI service"
+  value       = module.security_group.fastapi-sg-id
+}
+
+output "rds_sg_id" {
+  value = module.security_group.rds-sg-id
+}
