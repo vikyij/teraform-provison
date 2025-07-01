@@ -125,11 +125,21 @@ module "ecr" {
   tags   = local.common_tags
 }
 
+module "security_group" {
+  source = "../../modules/security-group"
+
+  env       = var.env
+  tags      = local.common_tags
+  vpc_id    = module.vpc.vpc_id
+  alb_sg_id = module.alb.security_group_id
+}
+
 module "ecs" {
   source = "../../modules/ecs"
 
   cluster_name = var.cluster_name
   tags         = local.common_tags
+
 
   services = {
     # React frontend (public subnet)
@@ -186,23 +196,7 @@ module "ecs" {
         }
       }
       subnet_ids = module.vpc.public_subnet_ids
-      security_group_rules = {
-        alb_ingress_8000 = {
-          type                     = "ingress"
-          from_port                = 8000
-          to_port                  = 8000
-          protocol                 = "tcp"
-          source_security_group_id = module.alb.security_group_id
-        }
-
-        egress_all = {
-          type        = "egress"
-          from_port   = 0
-          to_port     = 0
-          protocol    = "-1"
-          cidr_blocks = ["0.0.0.0/0"]
-        }
-      }
+      security_group_ids = [module.security_group.fastapi-sg-id]
     }
 
     # Celery Worker (private subnet)
@@ -244,6 +238,7 @@ module "ecs" {
     }
   }
 }
+
 
 module "cloudwatch" {
   source = "../../modules/cloudwatch"
