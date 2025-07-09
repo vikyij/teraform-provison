@@ -98,18 +98,22 @@ output "rds_sg_id" {
   value = module.security_group.rds-sg-id
 }
 
-variable "db_name" {
-  type        = string
-  description = "name of the database"
+output "rds_endpoint" {
+  value = module.rds.rds_endpoint
 }
 
-variable "db_username" {
-  type        = string
-  description = "database username for login"
+output "rds_instance_id" {
+  value = module.rds.rds_instance_id
 }
 
-variable "db_password" {
-  type        = string
-  description = "database password for login"
+output "secret_id" {
+  value = module.secrets.secret_id
 }
 
+output "secret_arn" {
+  value = module.secrets.secret_arn
+}
+
+output "secret_name" {
+  value = module.secrets.secret_name
+}

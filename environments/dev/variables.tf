@@ -42,3 +42,23 @@ variable "cluster_name" {
   description = "defines the cluster name"
   type        = string
 }
+
+variable "db_name" {
+  type        = string
+  description = "name of the database"
+}
+
+variable "db_username" {
+  type        = string
+  description = "database username for login"
+}
+
+variable "db_password" {
+  type        = string
+  description = "database password for login"
+}
+
+variable "secrets_map" {
+  type        = map(string)
+  description = "Map of secrets to store as key-value JSON"
+}
