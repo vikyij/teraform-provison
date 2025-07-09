@@ -134,6 +134,19 @@ module "security_group" {
   alb_sg_id = module.alb.security_group_id
 }
 
+module "rds" {
+  source = "../../modules/rds"
+
+  env                   = var.env
+  tags                  = local.common_tags
+  private_subnets       = module.vpc.private_subnet_ids
+  db_name               = var.db_name
+  db_username           = var.db_username
+  db_password           = var.db_password
+  db_instance           = "rds_instance_${var.env}"
+  rds_security_group_id = module.security_group.rds-sg-id
+}
+
 module "ecs" {
   source = "../../modules/ecs"
 
@@ -195,7 +208,7 @@ module "ecs" {
           container_port   = 8000
         }
       }
-      subnet_ids = module.vpc.public_subnet_ids
+      subnet_ids         = module.vpc.public_subnet_ids
       security_group_ids = [module.security_group.fastapi-sg-id]
     }
 

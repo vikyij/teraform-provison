@@ -97,3 +97,19 @@ output "fastapi_sg_id" {
 output "rds_sg_id" {
   value = module.security_group.rds-sg-id
 }
+
+variable "db_name" {
+  type        = string
+  description = "name of the database"
+}
+
+variable "db_username" {
+  type        = string
+  description = "database username for login"
+}
+
+variable "db_password" {
+  type        = string
+  description = "database password for login"
+}
+
