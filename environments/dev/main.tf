@@ -143,7 +143,7 @@ module "rds" {
   db_name               = var.db_name
   db_username           = var.db_username
   db_password           = var.db_password
-  db_instance           = "rds_instance_${var.env}"
+  db_instance           = "rds-instance-${var.env}"
   rds_security_group_id = module.security_group.rds-sg-id
 }
 
@@ -258,4 +258,12 @@ module "cloudwatch" {
 
   env  = var.env
   tags = local.common_tags
+}
+
+module "secrets" {
+  source = "../../modules/secrets-manager"
+
+  env         = var.env
+  tags        = local.common_tags
+  secrets_map = var.secrets_map
 }

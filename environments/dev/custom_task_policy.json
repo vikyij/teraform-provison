@@ -8,7 +8,13 @@
           "s3:PutObject"
         ],
         "Resource": "*"
+      },
+      {
+        "Action": "secretsmanager:GetSecretValue",
+        "Effect": "Allow",
+        "Resource": "*"
       }
+      
     ]
   }
   
