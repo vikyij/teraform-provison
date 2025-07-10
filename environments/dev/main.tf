@@ -147,6 +147,14 @@ module "rds" {
   rds_security_group_id = module.security_group.rds-sg-id
 }
 
+module "secrets" {
+  source = "../../modules/secrets-manager"
+
+  env         = var.env
+  tags        = local.common_tags
+  secrets_map = var.secrets_map
+}
+
 module "ecs" {
   source = "../../modules/ecs"
 
@@ -193,14 +201,34 @@ module "ecs" {
 
     # FastAPI backend (public subnet or internal depending on use)
     fastapi = {
-      cpu    = 256
-      memory = 512
+      cpu               = 256
+      memory            = 512
+      task_iam_role_arn = module.iam.task-role-arn
       container_definitions = {
         fastapi = {
           image         = module.ecr.ecr_fastapi_url
           port_mappings = [{ containerPort = 8000, hostPort = 8000, protocol = "tcp" }]
+          secrets = [
+            {
+              name      = "DB_USERNAME"
+              valueFrom = "${module.secrets.secret_arn}:username::"
+            },
+            {
+              name      = "DB_PASSWORD"
+              valueFrom = "${module.secrets.secret_arn}:password::"
+            }
+          ]
+
+          environment = [
+            { name = "DB_HOST", value = "${module.rds.rds_address}" },
+            { name = "DB_PORT", value = "${module.rds.rds_port}" },
+            { name = "DB_NAME", value = "${var.db_name}" }
+          ]
         }
+
       }
+
+
       load_balancer = {
         service = {
           target_group_arn = aws_lb_target_group.fastapi.arn
@@ -260,10 +288,3 @@ module "cloudwatch" {
   tags = local.common_tags
 }
 
-module "secrets" {
-  source = "../../modules/secrets-manager"
-
-  env         = var.env
-  tags        = local.common_tags
-  secrets_map = var.secrets_map
-}
