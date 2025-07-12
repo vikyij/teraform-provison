@@ -1,7 +1,7 @@
 # ECS module using official terraform-aws-modules/ecs/aws
 module "ecs" {
   source  = "terraform-aws-modules/ecs/aws"
-  version = "5.12.1"
+  version = "6.0.2"
 
   # Name of the ECS cluster to create or use
   cluster_name = var.cluster_name
@@ -16,17 +16,14 @@ module "ecs" {
     }
   }
 
-  # Use both FARGATE and FARGATE_SPOT to balance cost and availability
-  fargate_capacity_providers = {
+  # Cluster capacity providers
+  default_capacity_provider_strategy = {
     FARGATE = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
+      base   = 20
     }
     FARGATE_SPOT = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
     }
   }
 
