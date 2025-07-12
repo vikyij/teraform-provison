@@ -169,8 +169,8 @@ module "ecs" {
       memory = 512
       container_definitions = {
         react = {
-          image         = module.ecr.ecr_react_frontend_url
-          port_mappings = [{ containerPort = 80, hostPort = 80, protocol = "tcp" }]
+          image        = module.ecr.ecr_react_frontend_url
+          portMappings = [{ containerPort = 80, hostPort = 80, protocol = "tcp" }]
         }
       }
       load_balancer = {
@@ -201,29 +201,33 @@ module "ecs" {
 
     # FastAPI backend (public subnet or internal depending on use)
     fastapi = {
-      cpu               = 256
-      memory            = 512
-      task_iam_role_arn = module.iam.task-role-arn
+      cpu                   = 256
+      memory                = 512
+      create_tasks_iam_role = false
+      tasks_iam_role_arn    = module.iam.task-role-arn
+
       container_definitions = {
         fastapi = {
-          image         = module.ecr.ecr_fastapi_url
-          port_mappings = [{ containerPort = 8000, hostPort = 8000, protocol = "tcp" }]
-          secrets = [
-            {
-              name      = "DB_USERNAME"
-              valueFrom = "${module.secrets.secret_arn}:username::"
-            },
-            {
-              name      = "DB_PASSWORD"
-              valueFrom = "${module.secrets.secret_arn}:password::"
-            }
-          ]
+          image        = module.ecr.ecr_fastapi_url
+          portMappings = [{ containerPort = 8000, hostPort = 8000, protocol = "tcp" }]
+          # secrets = [
+          #   {
+          #     name      = "DB_USERNAME"
+          #     valueFrom = "${module.secrets.secret_arn}:username::"
+          #   },
+          #   {
+          #     name      = "DB_PASSWORD"
+          #     valueFrom = "${module.secrets.secret_arn}:password::"
+          #   }
+          # ]
 
           environment = [
             { name = "DB_HOST", value = "${module.rds.rds_address}" },
             { name = "DB_PORT", value = "${module.rds.rds_port}" },
-            { name = "DB_NAME", value = "${var.db_name}" }
+            { name = "DB_NAME", value = "${var.db_name}" },
+            { name = "DB_SECRET_ARN", value="${module.secrets.secret_arn}"}
           ]
+
         }
 
       }
@@ -236,8 +240,11 @@ module "ecs" {
           container_port   = 8000
         }
       }
-      subnet_ids         = module.vpc.public_subnet_ids
-      security_group_ids = [module.security_group.fastapi-sg-id]
+
+      subnet_ids            = module.vpc.public_subnet_ids
+      security_group_ids    = [module.security_group.fastapi-sg-id]
+      create_security_group = false
+      security_group_rules  = {}
     }
 
     # Celery Worker (private subnet)
